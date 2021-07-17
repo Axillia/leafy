@@ -24,7 +24,10 @@
         </v-card>
       </v-col>
       <v-col cols="12">
-        <v-card class="clickable" >
+        <v-card
+            class="clickable"
+            @click="$router.push('product')"
+        >
           <div class="d-flex flex-no-wrap">
             <v-avatar
                 class="ma-3"
@@ -57,7 +60,10 @@
       </v-col>
 
       <v-col cols="12">
-        <v-card class="clickable" >
+        <v-card
+            class="clickable"
+            @click="$router.push('product')"
+        >
           <div class="d-flex flex-no-wrap">
             <v-avatar
                 class="ma-3"
