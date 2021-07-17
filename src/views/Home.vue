@@ -115,6 +115,7 @@
               dark
               large
               class="mt-16 ma-5"
+              @click="$router.push('listings')"
           >
             <v-icon left>
               mdi-magnify
