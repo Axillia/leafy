@@ -78,9 +78,6 @@
                         Continue
                       </v-btn>
 
-                      <v-btn text>
-                        Cancel
-                      </v-btn>
                     </v-stepper-content>
 
                     <v-stepper-content step="2">
@@ -118,28 +115,27 @@
                         Continue
                       </v-btn>
 
-                      <v-btn text>
-                        Cancel
-                      </v-btn>
                     </v-stepper-content>
 
                     <v-stepper-content step="3">
                       <v-card
-                          class="mb-12"
-                          color="grey lighten-1"
-                          height="200px"
-                      ></v-card>
+                          class="mb-12 text-center"
+                          flat
+                      >
+                        <v-uploader
+                            @done="uploadDone"
+                            button-text="Select profile picture"
+                        >
+                        </v-uploader>
+                      </v-card>
 
                       <v-btn
                           color="primary"
                           @click="e1 = 1"
                       >
-                        Continue
+                        Finish
                       </v-btn>
 
-                      <v-btn text>
-                        Cancel
-                      </v-btn>
                     </v-stepper-content>
                   </v-stepper-items>
                 </v-stepper>
@@ -161,6 +157,13 @@ export default {
       e1: 1,
     }
   },
+  methods: {
+    uploadDone(files){
+      if(files && Array.isArray(files) && files.length){
+        console.log(files);
+      }
+    }
+  }
 }
 </script>
 
