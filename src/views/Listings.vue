@@ -23,10 +23,14 @@
           </v-toolbar>
         </v-card>
       </v-col>
-      <v-col cols="12">
+      <v-col
+          cols="12"
+          v-for="(product, i) in listing"
+          :key="i"
+      >
         <v-card
             class="clickable"
-            @click="$router.push('product')"
+            @click="$router.push({name: 'Product', params: { id: _get(product, 'id', null) }})"
         >
           <div class="d-flex flex-no-wrap">
             <v-avatar
@@ -34,59 +38,23 @@
                 size="125"
                 tile
             >
-              <v-img :src="require('@/assets/tmp/cracked_phone.png')"></v-img>
+              <v-img :src="_get(product, 'photo', null)"></v-img>
             </v-avatar>
             <div>
               <v-card-text>
-                <p class="text-h6 text--primary">LG V20 [CRACKED]</p>
-                <p><v-icon>mdi-map-marker</v-icon>Colombo</p>
+                <p class="text-h6 text--primary">{{_get(product, 'name', null)}}</p>
+                <p><v-icon>mdi-map-marker</v-icon>{{_get(product, 'location.name', null)}}</p>
                 <div class="text--primary">
                   <v-chip
                       class="ma-2"
-                      color="warning"
-                      label
-                  >
-                    <v-icon left>
-                      mdi-hammer-wrench
-                    </v-icon>
-                    Live Parts
-                  </v-chip>
-                </div>
-              </v-card-text>
-
-            </div>
-          </div>
-        </v-card>
-      </v-col>
-
-      <v-col cols="12">
-        <v-card
-            class="clickable"
-            @click="$router.push('product')"
-        >
-          <div class="d-flex flex-no-wrap">
-            <v-avatar
-                class="ma-3"
-                size="125"
-                tile
-            >
-              <v-img :src="require('@/assets/tmp/ict_book.png')"></v-img>
-            </v-avatar>
-            <div>
-              <v-card-text>
-                <p class="text-h6 text--primary">A/L ICT MCQ - S. Withanage</p>
-                <p><v-icon>mdi-map-marker</v-icon>Galle</p>
-                <div class="text--primary">
-                  <v-chip
-                      class="ma-2"
-                      color="green"
+                      :color="_get(product, 'condition.label_color', null)"
                       text-color="white"
                       label
                   >
                     <v-icon left>
-                      mdi-check-circle
+                      {{_get(product, 'condition.label_icon', null)}}
                     </v-icon>
-                    Good Condition
+                    {{_get(product, 'condition.name', null)}}
                   </v-chip>
                 </div>
               </v-card-text>
@@ -100,8 +68,24 @@
 </template>
 
 <script>
+import axios from "axios";
+import _get from "lodash/get"
+
 export default {
-  name: "Listings"
+  name: "Listings",
+  methods: {
+    _get
+  },
+  data(){
+    return {
+      listing: []
+    }
+  },
+  mounted() {
+    axios
+    .get(`${process.env.VUE_APP_BASE_URL}/product/all`)
+    .then(response => (this.listing = response.data))
+  }
 }
 </script>
 
