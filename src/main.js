@@ -5,7 +5,7 @@ import vuetify from './plugins/vuetify'
 import vUploader from 'v-uploader';
 
 const uploaderConfig = {
-  uploadFileUrl: 'https://httpbin.org/post',
+  uploadFileUrl: 'http://localhost:3000/upload',
   deleteFileUrl: 'https://httpbin.org/delete',
   language: 'en',
   showMessage: (vue, message) => {

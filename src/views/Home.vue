@@ -115,7 +115,7 @@
               dark
               large
               class="mt-16 ma-5"
-              @click="$router.push('listings')"
+              :to="'listings'"
           >
             <v-icon left>
               mdi-magnify
@@ -127,6 +127,7 @@
               dark
               large
               class="mt-16 ma-5"
+              :to="'post'"
           >
             <v-icon left>
               mdi-rocket
