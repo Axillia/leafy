@@ -6,14 +6,14 @@
             class="pa-2"
             flat
         >
-          <v-flex class="text-h5">LG V20 [CRACKED]</v-flex>
-          <v-flex class="text-subtitle-1 grey--text">Posted on 15 Jul 9:23 am, Colombo</v-flex>
+          <v-flex class="text-h5">{{_get(product, 'name', null)}}</v-flex>
+          <v-flex class="text-subtitle-1 grey--text">Posted on {{moment(_get(product, 'posted_date', null)).format('MMM Do YYYY, h:mm a')}}, {{_get(product, 'location.name', null)}}</v-flex>
           <v-img
-              :src="require('@/assets/tmp/cracked_phone.png')"
+              :src="_get(product, 'photo', null)"
               width="500"
           ></v-img>
           <v-flex class="text-h6 pt-5">Description</v-flex>
-          <v-flex class="text-body-1 grey--text pt-5">LG V20 smartphone with a cracked display. It can be used for spare parts or repair the phone and can be used for general purposes.</v-flex>
+          <v-flex class="text-body-1 grey--text pt-5">{{_get(product, 'description', null)}}</v-flex>
         </v-card>
       </v-flex>
       <v-flex xs12 md3>
@@ -24,11 +24,11 @@
         >
           <v-responsive class="pt-4">
             <v-avatar size="100">
-              <v-img :src="require('@/assets/tmp/profile.png')"></v-img>
+              <v-img :src="_get(product, 'user.avatar', null)"></v-img>
             </v-avatar>
           </v-responsive>
           <v-card-text>
-            <div class="text-h5">John Doe</div>
+            <div class="text-h5">{{_get(product, 'user.f_name', null)}} {{_get(product, 'user.l_name', null)}}</div>
             <v-chip
                 class="ma-2"
                 color="amber darken-2"
@@ -37,7 +37,7 @@
               <v-icon left>mdi-star-circle</v-icon>
               MEMBER
             </v-chip>
-            <div class="gray--text">Member since Nov 24, 2017</div>
+            <div class="gray--text">Member since {{moment(_get(product, 'user.membership_date', null)).format('MMM Do YYYY')}}</div>
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -54,8 +54,26 @@
 </template>
 
 <script>
+import axios from "axios";
+import _get from "lodash/get";
+import moment from 'moment';
+
 export default {
-  name: "Product"
+  name: "Product",
+  methods: {
+    _get,
+    moment
+  },
+  data(){
+    return {
+      product: null
+    }
+  },
+  mounted() {
+    axios
+        .get(`${process.env.VUE_APP_BASE_URL}/product/${this.$route.params.id}`)
+        .then(response => (this.product = response.data))
+  }
 }
 </script>
 
