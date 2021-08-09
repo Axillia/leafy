@@ -17,6 +17,30 @@
               <v-col
                   cols="12"
               >
+                <v-snackbar
+                    v-model="snackbar"
+                    :timeout="timeout"
+                    color="red"
+                >
+                  Invalid Username or Password
+
+                  <template v-slot:action="{ attrs }">
+                    <v-btn
+                        color="white"
+                        text
+                        v-bind="attrs"
+                        @click="snackbar = false"
+                    >
+                      Close
+                    </v-btn>
+                  </template>
+                </v-snackbar>
+                <v-overlay :value="overlay">
+                  <v-progress-circular
+                      indeterminate
+                      size="64"
+                  ></v-progress-circular>
+                </v-overlay>
                 <v-stepper v-model="e1">
                   <v-stepper-header>
                     <v-stepper-step
@@ -43,100 +67,113 @@
                   </v-stepper-header>
 
                   <v-stepper-items>
-                    <v-stepper-content step="1">
-                      <v-card
-                          class="mb-12"
-                          flat
-                      >
-                        <v-text-field
-                            label="Email Address"
-                            prepend-inner-icon="mdi-email"
-                            outlined
-                        ></v-text-field>
-                        <v-text-field
-                            label="Phone Number"
-                            prepend-inner-icon="mdi-phone"
-                            outlined
-                        ></v-text-field>
-                        <v-text-field
-                            label="Password"
-                            prepend-inner-icon="mdi-lock"
-                            outlined
-                        ></v-text-field>
-
-                        <v-text-field
-                            label="Confirm Password"
-                            prepend-inner-icon="mdi-lock"
-                            outlined
-                        ></v-text-field>
-                      </v-card>
-
-                      <v-btn
-                          color="primary"
-                          @click="e1 = 2"
-                      >
-                        Continue
-                      </v-btn>
-
-                    </v-stepper-content>
-
-                    <v-stepper-content step="2">
-                      <v-card
-                          class="mb-12"
-                          flat
-                      >
-                        <v-text-field
-                            label="First Name"
-                            prepend-inner-icon="mdi-account"
-                            outlined
-                        ></v-text-field>
-                        <v-text-field
-                            label="Last Name"
-                            prepend-inner-icon="mdi-account"
-                            outlined
-                        ></v-text-field>
-                        <v-select
-                            label="District"
-                            outlined
-                        ></v-select>
-                        <v-textarea
-                            label="Bio"
-                            auto-grow
-                            outlined
-                            rows="1"
-                            row-height="15"
-                        ></v-textarea>
-                      </v-card>
-
-                      <v-btn
-                          color="primary"
-                          @click="e1 = 3"
-                      >
-                        Continue
-                      </v-btn>
-
-                    </v-stepper-content>
-
-                    <v-stepper-content step="3">
-                      <v-card
-                          class="mb-12 text-center"
-                          flat
-                      >
-                        <v-uploader
-                            @done="uploadDone"
-                            button-text="Select profile picture"
+                    <form @submit.prevent="handleSubmit">
+                      <v-stepper-content step="1">
+                        <v-card
+                            class="mb-12"
+                            flat
                         >
-                        </v-uploader>
-                      </v-card>
+                          <v-text-field
+                              label="Email Address"
+                              v-model="email"
+                              prepend-inner-icon="mdi-email"
+                              outlined
+                          ></v-text-field>
+                          <v-text-field
+                              label="Phone Number"
+                              v-model="phone"
+                              prepend-inner-icon="mdi-phone"
+                              outlined
+                          ></v-text-field>
+                          <v-text-field
+                              label="Password"
+                              v-model="password"
+                              type="password"
+                              prepend-inner-icon="mdi-lock"
+                              outlined
+                          ></v-text-field>
 
-                      <v-btn
-                          color="primary"
-                          @click="e1 = 1"
-                      >
-                        Finish
-                      </v-btn>
+                          <v-text-field
+                              label="Confirm Password"
+                              type="password"
+                              prepend-inner-icon="mdi-lock"
+                              outlined
+                          ></v-text-field>
+                        </v-card>
 
-                    </v-stepper-content>
+                        <v-btn
+                            color="primary"
+                            @click="e1 = 2"
+                        >
+                          Continue
+                        </v-btn>
+
+                      </v-stepper-content>
+
+                      <v-stepper-content step="2">
+                        <v-card
+                            class="mb-12"
+                            flat
+                        >
+                          <v-text-field
+                              label="First Name"
+                              v-model="f_name"
+                              prepend-inner-icon="mdi-account"
+                              outlined
+                          ></v-text-field>
+                          <v-text-field
+                              label="Last Name"
+                              v-model="l_name"
+                              prepend-inner-icon="mdi-account"
+                              outlined
+                          ></v-text-field>
+                          <v-select
+                              label="Location"
+                              v-model="location_id"
+                              :items="locations"
+                              item-text="name"
+                              item-value="id"
+                              outlined
+                          ></v-select>
+                          <v-textarea
+                              label="Bio"
+                              v-model="bio"
+                              auto-grow
+                              outlined
+                              rows="1"
+                              row-height="15"
+                          ></v-textarea>
+                        </v-card>
+
+                        <v-btn
+                            color="primary"
+                            @click="e1 = 3"
+                        >
+                          Continue
+                        </v-btn>
+
+                      </v-stepper-content>
+
+                      <v-stepper-content step="3">
+                        <v-card
+                            class="mb-12 text-center"
+                            flat
+                        >
+                          <v-uploader
+                              @done="uploadDone"
+                              button-text="Select profile picture"
+                          >
+                          </v-uploader>
+                        </v-card>
+
+                        <v-btn
+                            color="primary"
+                            @click="handleSubmit"
+                        >
+                          Finish
+                        </v-btn>
+                      </v-stepper-content>
+                    </form>
                   </v-stepper-items>
                 </v-stepper>
               </v-col>
@@ -150,18 +187,61 @@
 </template>
 
 <script>
+import axios from "axios";
+import router from "@/router";
+
 export default {
   name: "Register",
   data () {
     return {
       e1: 1,
+      email: null,
+      phone: null,
+      password: null,
+      f_name: null,
+      l_name: null,
+      location_id: null,
+      bio: null,
+      avatar: null,
+      locations: [],
+      snackbar: false,
+      timeout: 3000,
+      overlay: false,
     }
+  },
+  mounted() {
+    this.loadLocations();
   },
   methods: {
     uploadDone(files){
       if(files && Array.isArray(files) && files.length){
-        console.log(files);
+        this.avatar = files.url
       }
+    },
+    loadLocations(){
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/location/all`)
+          .then(response => (this.locations = response.data))
+    },
+    async handleSubmit(){
+      this.overlay = true;
+      await axios
+          .post(`${process.env.VUE_APP_BASE_URL}/user`, {
+            email: this.email,
+            phone: this.phone,
+            password: this.password,
+            f_name: this.f_name,
+            l_name: this.l_name,
+            location_id: this.location_id,
+            avatar: this.avatar,
+          })
+          .then( function () {
+            router.push('login');
+          })
+          .catch( () => (
+              this.snackbar = true
+          ));
+      this.overlay = false;
     }
   }
 }
