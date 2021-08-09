@@ -215,7 +215,7 @@ export default {
   methods: {
     uploadDone(files){
       if(files && Array.isArray(files) && files.length){
-        this.avatar = files.url
+        this.avatar = files[0].url
       }
     },
     loadLocations(){
