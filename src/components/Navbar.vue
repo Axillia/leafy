@@ -15,7 +15,7 @@
       <v-spacer></v-spacer>
       <v-btn
           color="warning"
-          :to="'profile'"
+          :to="'/profile'"
       >
         <v-icon left>mdi-account</v-icon>
         <span>Profile</span>

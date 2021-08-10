@@ -56,6 +56,7 @@
                     class="ml-2"
                     depressed
                     large
+                    :to="'/register'"
                 >
                   Create Account
                 </v-btn>

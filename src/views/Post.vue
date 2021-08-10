@@ -140,16 +140,24 @@ export default {
             name: this.name,
             description: this.description,
             photo: this.photo,
-            user: 1, // todo
             condition: this.condition,
             location: this.location
+          }, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
           })
           .then( function (response) {
             router.push({name: 'Product', params: { id: _get(response, 'data.id', null) }});
           })
-          .catch( () => (
+          .catch( (error) => {
+            if (error.response.status === 401){
+              localStorage.removeItem('accessToken')
+              router.push('/login')
+            }else {
               this.snackbar = true
-          ));
+            }
+          });
       this.overlay = false;
     }
   }

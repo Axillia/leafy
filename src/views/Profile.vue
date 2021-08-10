@@ -9,11 +9,11 @@
       >
         <v-responsive class="pt-4">
           <v-avatar size="100">
-            <v-img :src="require('@/assets/tmp/profile.png')"></v-img>
+            <v-img :src="_get(profile, 'avatar', null)"></v-img>
           </v-avatar>
         </v-responsive>
         <v-card-text>
-          <div class="text-h5">John Doe</div>
+          <div class="text-h5">{{_get(profile, 'f_name', null)}} {{_get(profile, 'l_name', null)}}</div>
           <v-chip
               class="ma-2"
               color="amber darken-2"
@@ -22,11 +22,11 @@
             <v-icon left>mdi-star-circle</v-icon>
             MEMBER
           </v-chip>
-          <div class="gray--text">Member since Nov 24, 2017</div>
+          <div class="gray--text">Member since {{moment(_get(profile, 'membership_date', null)).format('MMM Do YYYY')}}</div>
           <div class="py-8">
             <v-divider></v-divider>
           </div>
-          <div class="gray--text">My name is John Doe and I am a Junior Web Developer for Oswald Technologies. I am an accomplished coder and programmer, and I enjoy using my skills to contribute to the exciting technological advances that happen every day at Oswald Tech.</div>
+          <div class="gray--text">{{_get(profile, 'bio', null)}}</div>
         </v-card-text>
         <v-card-actions>
           <v-btn
@@ -87,8 +87,37 @@
 </template>
 
 <script>
+import axios from "axios";
+import _get from "lodash/get";
+import moment from "moment";
+import router from "@/router";
+
 export default {
-  name: "Profile"
+  name: "Profile",
+  data(){
+    return {
+      profile: null
+    }
+  },
+  methods: {
+    _get,
+    moment
+  },
+  mounted() {
+    axios
+        .get(`${process.env.VUE_APP_BASE_URL}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        })
+        .then(response => (this.profile = response.data))
+        .catch((error) => {
+          if (error.response.status === 401){
+            localStorage.removeItem('accessToken')
+            router.push('/login')
+          }
+        })
+  }
 }
 </script>
 
