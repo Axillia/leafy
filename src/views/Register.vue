@@ -76,6 +76,7 @@
                           <v-text-field
                               label="Email Address"
                               v-model="email"
+                              type="email"
                               prepend-inner-icon="mdi-email"
                               outlined
                           ></v-text-field>
@@ -207,6 +208,7 @@ export default {
       snackbar: false,
       timeout: 3000,
       overlay: false,
+      loader: false,
     }
   },
   mounted() {
@@ -215,6 +217,7 @@ export default {
   methods: {
     uploadDone(files){
       if(files && Array.isArray(files) && files.length){
+        console.log(this.loader)
         this.avatar = files[0].url
       }
     },
@@ -234,6 +237,7 @@ export default {
             l_name: this.l_name,
             location_id: this.location_id,
             avatar: this.avatar,
+            bio: this.bio,
           })
           .then( function () {
             router.push('login');

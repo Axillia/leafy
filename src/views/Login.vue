@@ -22,6 +22,7 @@
                       label="Email Address"
                       prepend-inner-icon="mdi-email"
                       v-model="email"
+                      type="email"
                       outlined
                   ></v-text-field>
                   <v-text-field

@@ -5,8 +5,8 @@ import vuetify from './plugins/vuetify'
 import vUploader from 'v-uploader';
 
 const uploaderConfig = {
-  uploadFileUrl: 'http://localhost:3000/upload',
-  deleteFileUrl: 'https://httpbin.org/delete',
+  uploadFileUrl: `${process.env.VUE_APP_BASE_URL}/upload`,
+  deleteFileUrl: `${process.env.VUE_APP_BASE_URL}/upload`,
   language: 'en',
   showMessage: (vue, message) => {
     console.log('Error message log', message)
