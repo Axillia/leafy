@@ -139,7 +139,7 @@ export default {
           .post(`${process.env.VUE_APP_BASE_URL}/product`, {
             name: this.name,
             description: this.description,
-            photo: this.photo,
+            photo: this.photo === null ? undefined : this.photo,
             condition: this.condition,
             location: this.location
           }, {

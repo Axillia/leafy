@@ -28,9 +28,11 @@
                   <v-text-field
                       label="Password"
                       prepend-inner-icon="mdi-lock"
+                      :append-icon="pw_visibility ? 'mdi-eye' : 'mdi-eye-off'"
+                      :type="pw_visibility ? 'text' : 'password'"
+                      @click:append="pw_visibility = !pw_visibility"
                       v-model="password"
                       outlined
-                      type="password"
                   ></v-text-field>
                   <v-btn text>
                     Forget Password?
@@ -103,6 +105,7 @@ export default {
   name: "Login",
   data(){
     return {
+      pw_visibility: false,
       email: null,
       password: null,
       snackbar: false,

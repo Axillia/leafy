@@ -22,7 +22,7 @@
                     :timeout="timeout"
                     color="red"
                 >
-                  Invalid Username or Password
+                  Oops! Something Went Wrong
 
                   <template v-slot:action="{ attrs }">
                     <v-btn
@@ -89,9 +89,11 @@
                           <v-text-field
                               label="Password"
                               v-model="password"
-                              type="password"
                               prepend-inner-icon="mdi-lock"
                               outlined
+                              :append-icon="pw_visibility ? 'mdi-eye' : 'mdi-eye-off'"
+                              :type="pw_visibility ? 'text' : 'password'"
+                              @click:append="pw_visibility = !pw_visibility"
                           ></v-text-field>
 
                           <v-text-field
@@ -195,6 +197,7 @@ export default {
   name: "Register",
   data () {
     return {
+      pw_visibility: false,
       e1: 1,
       email: null,
       phone: null,
@@ -236,7 +239,7 @@ export default {
             f_name: this.f_name,
             l_name: this.l_name,
             location_id: this.location_id,
-            avatar: this.avatar,
+            avatar: this.avatar === null ? undefined : this.avatar,
             bio: this.bio,
           })
           .then( function () {
