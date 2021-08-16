@@ -2,6 +2,12 @@
   <v-container>
     <v-layout row wrap>
       <v-flex xs12 md9>
+        <v-overlay :value="overlay">
+          <v-progress-circular
+              indeterminate
+              size="64"
+          ></v-progress-circular>
+        </v-overlay>
         <v-card
             class="pa-2"
             flat
@@ -66,13 +72,20 @@ export default {
   },
   data(){
     return {
+      overlay: false,
       product: null
     }
   },
   mounted() {
+    this.overlay = true;
     axios
         .get(`${process.env.VUE_APP_BASE_URL}/product/${this.$route.params.id}`)
-        .then(response => (this.product = response.data))
+        .then(
+            response => {
+              this.product = response.data;
+              this.overlay = false;
+            }
+        )
   }
 }
 </script>

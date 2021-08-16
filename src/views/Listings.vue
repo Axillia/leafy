@@ -2,6 +2,12 @@
   <v-container>
     <v-row dense>
       <v-col cols="12">
+        <v-overlay :value="overlay">
+          <v-progress-circular
+              indeterminate
+              size="64"
+          ></v-progress-circular>
+        </v-overlay>
         <v-card>
           <v-toolbar
               dark
@@ -78,13 +84,20 @@ export default {
   },
   data(){
     return {
+      overlay: false,
       listing: []
     }
   },
   mounted() {
+    this.overlay = true;
     axios
     .get(`${process.env.VUE_APP_BASE_URL}/product/all`)
-    .then(response => (this.listing = response.data))
+    .then(
+        response => {
+          this.listing = response.data
+          this.overlay = false;
+        }
+    )
   }
 }
 </script>
