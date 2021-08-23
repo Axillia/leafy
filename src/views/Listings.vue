@@ -48,8 +48,12 @@
             </v-avatar>
             <div>
               <v-card-text>
-                <p class="text-h6 text--primary">{{_get(product, 'name', null)}}</p>
-                <p><v-icon>mdi-map-marker</v-icon>{{_get(product, 'location.name', null)}}</p>
+                <p class="text-h6 text--primary ml-1">{{_get(product, 'name', null)}}</p>
+                <p>
+                  <span class="mr-8"><v-icon>mdi-map-marker</v-icon>{{_get(product, 'location.name', null)}}</span>
+                  <span class="mr-8 d-none d-md-inline-flex">{{moment(_get(product, 'posted_date', null)).format('MMM Do YYYY')}}</span>
+                  <span>Views: {{_get(product, 'view_count', null)}}</span>
+                </p>
                 <div class="text--primary">
                   <v-chip
                       class="ma-2"
@@ -76,11 +80,13 @@
 <script>
 import axios from "axios";
 import _get from "lodash/get"
+import moment from "moment";
 
 export default {
   name: "Listings",
   methods: {
-    _get
+    _get,
+    moment
   },
   data(){
     return {
