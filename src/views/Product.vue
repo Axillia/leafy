@@ -14,7 +14,22 @@
         >
           <v-flex class="text-h5">{{_get(product, 'name', null)}}</v-flex>
           <v-flex class="text-subtitle-1 grey--text">Posted on {{moment(_get(product, 'posted_date', null)).format('MMM Do YYYY, h:mm a')}}, {{_get(product, 'location.name', null)}}</v-flex>
+          <v-flex class="text-right mr-lg-8">
+            <share-facebook
+                title_social="Facebook"
+                has_icon
+            ></share-facebook>
+            <share-twitter
+                title_social="Twitter"
+                has_icon
+            ></share-twitter>
+            <share-whatsapp
+                title_social="WhatsApp"
+                has_icon
+            ></share-whatsapp>
+          </v-flex>
           <v-img
+              class="mt-5"
               :src="_get(product, 'photo', null)"
               width="500"
           ></v-img>
@@ -63,9 +78,17 @@
 import axios from "axios";
 import _get from "lodash/get";
 import moment from 'moment';
+import ShareFacebook from "vue-goodshare/src/providers/Facebook";
+import ShareTwitter from "vue-goodshare/src/providers/Twitter";
+import ShareWhatsapp from "vue-goodshare/src/providers/WhatsApp";
 
 export default {
   name: "Product",
+  components: {
+    ShareFacebook,
+    ShareTwitter,
+    ShareWhatsapp
+  },
   methods: {
     _get,
     moment
