@@ -2,6 +2,23 @@
   <v-container>
     <v-layout row wrap>
       <v-flex xs12 md9>
+        <v-snackbar
+            v-model="snackbar"
+            :timeout="timeout"
+            :color="snackbar_clr"
+        >
+          {{snackbar_msg}}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+                color="white"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
         <v-overlay :value="overlay">
           <v-progress-circular
               indeterminate
@@ -35,6 +52,46 @@
           ></v-img>
           <v-flex class="text-h6 pt-5">Description</v-flex>
           <v-flex class="text-body-1 grey--text pt-5">{{_get(product, 'description', null)}}</v-flex>
+          <v-flex class="text-h6 pt-5">Questions</v-flex>
+          <v-form
+              @submit.prevent="handleSubmit"
+          >
+              <v-textarea
+                  clearable
+                  clear-icon="mdi-close-circle"
+                  label="Enter your question(s) here"
+                  rows="1"
+                  row-height="15"
+                  v-model="question"
+              ></v-textarea>
+              <v-flex class="float-right">
+                <v-btn
+                    depressed
+                    color="primary"
+                    @click="handleSubmit"
+                >
+                  Ask Questions
+                </v-btn>
+              </v-flex>
+          </v-form>
+          <v-list three-line>
+            <template v-for="(item, index) in comments">
+              <v-list-item
+                  :key="_get(item, 'id', null)"
+              >
+                <v-list-item-avatar>
+                  <v-img :src="_get(item, 'user.avatar', null)"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title><span class="grey--text text--lighten-1">{{_get(item, 'user.f_name', null)}} - </span>{{_get(item, 'question', null)}}</v-list-item-title>
+                  <v-list-item-subtitle><span class="text--primary">{{_get(item, 'answer', null)}}</span></v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider
+                  :key="index"
+              ></v-divider>
+            </template>
+          </v-list>
         </v-card>
       </v-flex>
       <v-flex xs12 md3>
@@ -81,6 +138,7 @@ import moment from 'moment';
 import ShareFacebook from "vue-goodshare/src/providers/Facebook";
 import ShareTwitter from "vue-goodshare/src/providers/Twitter";
 import ShareWhatsapp from "vue-goodshare/src/providers/WhatsApp";
+import router from "@/router";
 
 export default {
   name: "Product",
@@ -91,12 +149,47 @@ export default {
   },
   methods: {
     _get,
-    moment
+    moment,
+    async handleSubmit(){
+      this.overlay = true;
+      await axios
+          .post(`${process.env.VUE_APP_BASE_URL}/comment`, {
+            product: this.$route.params.id,
+            question: this.question
+          }, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
+          .then( () => {
+            this.snackbar_msg = "Question has sent to donator"
+            this.snackbar_clr = "success"
+            this.snackbar = true
+            this.question = ""
+          })
+          .catch( (error) => {
+            if (error.response.status === 401){
+              localStorage.removeItem('accessToken')
+              router.push('/login')
+            }else {
+              this.snackbar_msg = "Oops! Something Went Wrong"
+              this.snackbar_clr = "red"
+              this.snackbar = true
+            }
+          });
+      this.overlay = false;
+    }
   },
   data(){
     return {
+      question: null,
       overlay: false,
-      product: null
+      product: null,
+      snackbar: false,
+      snackbar_msg: null,
+      snackbar_clr: null,
+      timeout: 3000,
+      comments: []
     }
   },
   mounted() {
@@ -109,6 +202,13 @@ export default {
               this.overlay = false;
             }
         )
+    axios
+      .get(`${process.env.VUE_APP_BASE_URL}/comment/${this.$route.params.id}`)
+      .then(
+          response => {
+            this.comments = response.data;
+          }
+      )
   }
 }
 </script>
