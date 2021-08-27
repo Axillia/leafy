@@ -243,7 +243,11 @@ export default {
     },
     loadQuestions() {
       axios
-          .get(`${process.env.VUE_APP_BASE_URL}/comment/user/1`)
+          .get(`${process.env.VUE_APP_BASE_URL}/comment/user`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
           .then(response => (this.questions = response.data))
     },
     editItem (item) {
