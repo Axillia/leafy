@@ -52,6 +52,82 @@
           ></v-img>
           <v-flex class="text-h6 pt-5">Description</v-flex>
           <v-flex class="text-body-1 grey--text pt-5">{{_get(product, 'description', null)}}</v-flex>
+          <v-flex class="pt-5">
+            <v-btn
+                class="mx-2"
+                depressed
+                color="primary"
+            >
+              Request this item
+            </v-btn>
+            <v-dialog
+                v-model="dialog"
+                persistent
+                max-width="600px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                    text
+                    v-bind="attrs"
+                    v-on="on"
+                >
+                  <v-icon left>
+                    mdi-close-circle-outline
+                  </v-icon>
+                  Report this item
+                </v-btn>
+              </template>
+              <v-card>
+                <v-form
+                    @submit.prevent="reportSubmit"
+                >
+                  <v-card-title>
+                    <span class="text-h5">Is there something wrong with this post?</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col
+                            cols="12"
+                        >
+                          <v-select
+                              :items="reasons"
+                              label="Reason*"
+                              v-model="report_reason"
+                              required
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-textarea
+                              label="Message"
+                              v-model="report_message"
+                          ></v-textarea>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="dialog = false"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="reportSubmit"
+                    >
+                      Send
+                    </v-btn>
+                  </v-card-actions>
+                </v-form>
+              </v-card>
+            </v-dialog>
+          </v-flex>
           <v-flex class="text-h6 pt-5">Questions</v-flex>
           <v-form
               @submit.prevent="handleSubmit"
@@ -178,6 +254,37 @@ export default {
             }
           });
       this.overlay = false;
+    },
+    async reportSubmit(){
+      this.overlay = true;
+      await axios
+          .post(`${process.env.VUE_APP_BASE_URL}/report`, {
+            product: this.$route.params.id,
+            reason: this.report_reason,
+            message: this.report_message
+          }, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
+          .then( () => {
+            this.snackbar_msg = "Successfully report the post"
+            this.snackbar_clr = "success"
+            this.snackbar = true
+            this.question = ""
+          })
+          .catch( (error) => {
+            if (error.response.status === 401){
+              localStorage.removeItem('accessToken')
+              router.push('/login')
+            }else {
+              this.snackbar_msg = "Oops! Something Went Wrong"
+              this.snackbar_clr = "red"
+              this.snackbar = true
+            }
+          });
+      this.dialog = false;
+      this.overlay = false;
     }
   },
   data(){
@@ -189,7 +296,18 @@ export default {
       snackbar_msg: null,
       snackbar_clr: null,
       timeout: 3000,
-      comments: []
+      comments: [],
+      dialog: false,
+      reasons: [
+          'Item Unavailable',
+          'Fraud',
+          'Duplicate',
+          'Spam',
+          'Offensive',
+          'Other'
+      ],
+      report_reason: null,
+      report_message: null
     }
   },
   mounted() {
