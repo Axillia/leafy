@@ -196,6 +196,7 @@
           <v-card-actions>
             <v-btn
                 text
+                :href="mailto"
                 color="primary">
               <v-icon small left>mdi-android-messages</v-icon>
               <span>Message</span>
@@ -307,7 +308,8 @@ export default {
           'Other'
       ],
       report_reason: null,
-      report_message: null
+      report_message: null,
+      mailto: null
     }
   },
   mounted() {
@@ -317,6 +319,7 @@ export default {
         .then(
             response => {
               this.product = response.data;
+              this.mailto = `mailto:${_get(this.product, 'user.email', null)}?subject=🍀 LEAFY:`
               this.overlay = false;
             }
         )
