@@ -68,10 +68,20 @@
                   </v-chip>
                 </div>
               </v-card-text>
-
             </div>
           </div>
         </v-card>
+      </v-col>
+      <v-col class="pt-10">
+        <div class="text-center">
+          <v-pagination
+              v-model="page"
+              :length="length"
+              prev-icon="mdi-menu-left"
+              next-icon="mdi-menu-right"
+              @input="loadProduct"
+          ></v-pagination>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -86,24 +96,30 @@ export default {
   name: "Listings",
   methods: {
     _get,
-    moment
+    moment,
+    loadProduct() {
+      this.overlay = true;
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/product/all?page=${this.page}&limit=10`)
+          .then(
+              response => {
+                this.listing = response.data.data
+                this.length = response.data.totalPages
+                this.overlay = false;
+              }
+          )
+    }
   },
   data(){
     return {
       overlay: false,
-      listing: []
+      listing: [],
+      page: 1,
+      length: 1,
     }
   },
   mounted() {
-    this.overlay = true;
-    axios
-    .get(`${process.env.VUE_APP_BASE_URL}/product/all`)
-    .then(
-        response => {
-          this.listing = response.data
-          this.overlay = false;
-        }
-    )
+    this.loadProduct();
   }
 }
 </script>
