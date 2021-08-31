@@ -57,6 +57,7 @@
                 class="mx-2"
                 depressed
                 color="primary"
+                @click="requestSubmit"
             >
               Request this item
             </v-btn>
@@ -286,7 +287,35 @@ export default {
           });
       this.dialog = false;
       this.overlay = false;
-    }
+    },
+    async requestSubmit(){
+      this.overlay = true;
+      await axios
+          .post(`${process.env.VUE_APP_BASE_URL}/request`, {
+            product: this.$route.params.id,
+            status: 'PENDING'
+          }, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
+          .then( () => {
+            this.snackbar_msg = "You have successfully requested this product"
+            this.snackbar_clr = "success"
+            this.snackbar = true
+          })
+          .catch( (error) => {
+            if (error.response.status === 401){
+              localStorage.removeItem('accessToken')
+              router.push('/login')
+            }else {
+              this.snackbar_msg = "Oops! Something Went Wrong"
+              this.snackbar_clr = "red"
+              this.snackbar = true
+            }
+          });
+      this.overlay = false;
+    },
   },
   data(){
     return {

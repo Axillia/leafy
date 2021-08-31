@@ -109,8 +109,8 @@
       <v-card flat>
         <v-tabs v-model="tab">
           <v-tab href="#question">Questions</v-tab>
-          <v-tab>Item Two</v-tab>
-          <v-tab>Item Three</v-tab>
+          <v-tab href="#received">Invitations (Received)</v-tab>
+          <v-tab href="#sent">Invitations (Sent)</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item value="question">
@@ -187,6 +187,48 @@
               </v-data-table>
             </v-card>
           </v-tab-item>
+          <v-tab-item value="sent">
+            <v-card flat>
+              <v-data-table
+                  :headers="sent_headers"
+                  :items="sent"
+                  :hide-default-footer="true"
+              >
+                <template v-slot:item.actions="{ item }">
+                  <v-icon
+                      small
+                      @click="deleteItem(item)"
+                  >
+                    mdi-delete
+                  </v-icon>
+                </template>
+              </v-data-table>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item value="received">
+            <v-card flat>
+              <v-data-table
+                  :headers="received_headers"
+                  :items="received"
+                  :hide-default-footer="true"
+              >
+                <template v-slot:item.actions="{ item }">
+                  <v-icon
+                      small
+                      class="mr-2"
+                  >
+                    mdi-check-circle
+                  </v-icon>
+                  <v-icon
+                      small
+                      @click="deleteItem(item)"
+                  >
+                    mdi-delete
+                  </v-icon>
+                </template>
+              </v-data-table>
+            </v-card>
+          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-flex>
@@ -212,6 +254,14 @@ export default {
         { text: 'Asked by', value: 'user.f_name', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
+      sent_headers: [
+        { text: 'Product Name', value: 'product.name', sortable: false },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+      received_headers: [
+        { text: 'Product Name', value: 'product.name', sortable: false },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
       questions: [],
       answer: null,
       dialog: false,
@@ -221,6 +271,8 @@ export default {
       snackbar_clr: null,
       timeout: 3000,
       overlay: false,
+      sent: [],
+      received: []
     }
   },
   methods: {
@@ -249,6 +301,24 @@ export default {
             }
           })
           .then(response => (this.questions = response.data))
+    },
+    loadSentInvitations() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/request`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
+          .then(response => (this.sent = response.data))
+    },
+    loadReceivedInvitations() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/request/product`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+          })
+          .then(response => (this.received = response.data))
     },
     editItem (item) {
       this.editedIndex = this.questions.indexOf(item)
@@ -293,6 +363,8 @@ export default {
   mounted() {
     this.loadProfile();
     this.loadQuestions();
+    this.loadSentInvitations();
+    this.loadReceivedInvitations()
   }
 }
 </script>
