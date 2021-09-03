@@ -8,26 +8,39 @@
               size="64"
           ></v-progress-circular>
         </v-overlay>
-        <v-card>
-          <v-toolbar
-              dark
-              color="primary"
-          >
-            <v-toolbar-title>I want to find</v-toolbar-title>
-            <v-autocomplete
-                cache-items
-                class="mx-4"
-                flat
-                hide-no-data
-                hide-details
-                label="What are you looking for?"
-                solo-inverted
-            ></v-autocomplete>
-            <v-btn icon>
-              <v-icon>mdi-magnify</v-icon>
+        <v-layout wrap>
+          <v-flex xs12 sm12 md3 class="pa-md-5">
+            <v-select
+                label="Location"
+                outlined
+            ></v-select>
+          </v-flex>
+          <v-flex xs12 sm12 md3 class="pa-md-5">
+            <v-select
+                label="Category"
+                outlined
+            ></v-select>
+          </v-flex>
+          <v-flex xs12 sm12 md3 class="pa-md-5">
+            <v-select
+                label="Sub Category"
+                outlined
+            ></v-select>
+          </v-flex>
+          <v-flex xs12 sm12 md3 class="pa-md-5">
+            <v-btn
+                depressed
+                color="primary"
+                x-large
+                block
+            >
+              <v-icon left>
+                mdi-magnify
+              </v-icon>
+              Search
             </v-btn>
-          </v-toolbar>
-        </v-card>
+          </v-flex>
+        </v-layout>
       </v-col>
       <v-col
           cols="12"
