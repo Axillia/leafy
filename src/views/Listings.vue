@@ -11,19 +11,32 @@
         <v-layout wrap>
           <v-flex xs12 sm12 md3 class="pa-md-5">
             <v-select
+                :items="locations"
+                item-text="name"
+                item-value="id"
                 label="Location"
+                v-model="location"
                 outlined
             ></v-select>
           </v-flex>
           <v-flex xs12 sm12 md3 class="pa-md-5">
             <v-select
+                :items="categories"
+                item-text="name"
+                item-value="id"
+                @change="loadSubCategories"
                 label="Category"
+                v-model="selectedCategory"
                 outlined
             ></v-select>
           </v-flex>
           <v-flex xs12 sm12 md3 class="pa-md-5">
             <v-select
+                :items="subCategories"
+                item-text="name"
+                item-value="id"
                 label="Sub Category"
+                v-model="category"
                 outlined
             ></v-select>
           </v-flex>
@@ -33,6 +46,7 @@
                 color="primary"
                 x-large
                 block
+                @click="loadProduct"
             >
               <v-icon left>
                 mdi-magnify
@@ -112,13 +126,49 @@ export default {
     moment,
     loadProduct() {
       this.overlay = true;
+      let filters = '';
+
+      if (this.location) {
+        filters = filters + `&location=${this.location}`
+      }
+
+      if (this.category) {
+        filters = filters + `&category=${this.category}`
+      }
       axios
-          .get(`${process.env.VUE_APP_BASE_URL}/product/all?page=${this.page}&limit=10`)
+          .get(`${process.env.VUE_APP_BASE_URL}/product/all?page=${this.page}&limit=10${filters}`)
           .then(
               response => {
                 this.listing = response.data.data
                 this.length = response.data.totalPages
                 this.overlay = false;
+              }
+          )
+    },
+    loadLocations() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/location/all`)
+          .then(
+              response => {
+                this.locations = response.data
+              }
+          )
+    },
+    loadCategories() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/category`)
+          .then(
+              response => {
+                this.categories = response.data
+              }
+          )
+    },
+    loadSubCategories() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/category/${this.selectedCategory}`)
+          .then(
+              response => {
+                this.subCategories = response.data
               }
           )
     }
@@ -129,10 +179,18 @@ export default {
       listing: [],
       page: 1,
       length: 1,
+      locations: [],
+      categories: [],
+      subCategories: [],
+      selectedCategory: null,
+      location: null,
+      category: null
     }
   },
   mounted() {
     this.loadProduct();
+    this.loadLocations();
+    this.loadCategories();
   }
 }
 </script>
