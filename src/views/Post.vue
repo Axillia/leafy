@@ -68,6 +68,25 @@
               dense
               outlined
           ></v-select>
+          <v-select
+              :items="categories"
+              item-text="name"
+              item-value="id"
+              @change="loadSubCategories"
+              label="Category"
+              v-model="selectedCategory"
+              dense
+              outlined
+          ></v-select>
+          <v-select
+              :items="subCategories"
+              item-text="name"
+              item-value="id"
+              label="Sub Category"
+              v-model="category"
+              dense
+              outlined
+          ></v-select>
           <v-uploader
               @done="uploadDone"
               button-text="Select product picture"
@@ -111,11 +130,16 @@ export default {
       snackbar: false,
       timeout: 3000,
       overlay: false,
+      categories: [],
+      subCategories: [],
+      selectedCategory: null,
+      category: null
     }
   },
   mounted() {
     this.loadLocations();
     this.loadConditions();
+    this.loadCategories();
   },
   methods: {
     uploadDone(files){
@@ -133,6 +157,24 @@ export default {
           .get(`${process.env.VUE_APP_BASE_URL}/condition/all`)
           .then(response => (this.conditions = response.data))
     },
+    loadCategories() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/category`)
+          .then(
+              response => {
+                this.categories = response.data
+              }
+          )
+    },
+    loadSubCategories() {
+      axios
+          .get(`${process.env.VUE_APP_BASE_URL}/category/${this.selectedCategory}`)
+          .then(
+              response => {
+                this.subCategories = response.data
+              }
+          )
+    },
     async handleSubmit(){
       this.overlay = true;
       await axios
@@ -141,7 +183,8 @@ export default {
             description: this.description,
             photo: this.photo === null ? undefined : this.photo,
             condition: this.condition,
-            location: this.location
+            location: this.location,
+            category: this.category
           }, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
