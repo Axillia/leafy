@@ -162,11 +162,12 @@
                             class="mb-12 text-center"
                             flat
                         >
-                          <v-uploader
-                              @done="uploadDone"
-                              button-text="Select profile picture"
-                          >
-                          </v-uploader>
+                          <FilePond
+                              name="filepond"
+                              ref="pond"
+                              :server="server"
+                              @processfile="onProcessFile"
+                          />
                         </v-card>
 
                         <v-btn
@@ -192,9 +193,28 @@
 <script>
 import axios from "axios";
 import router from "@/router";
+import vueFilePond, { setOptions } from 'vue-filepond';
+import 'filepond/dist/filepond.min.css';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginFileRename from 'filepond-plugin-file-rename';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+
+const FilePond = vueFilePond(
+    FilePondPluginImagePreview,
+    FilePondPluginFileRename
+);
+
+setOptions({
+  fileRenameFunction: (file) => {
+    return `${Date.now()}${file.extension}`;
+  },
+});
 
 export default {
   name: "Register",
+  components: {
+    FilePond
+  },
   data () {
     return {
       pw_visibility: false,
@@ -212,17 +232,15 @@ export default {
       timeout: 3000,
       overlay: false,
       loader: false,
+      server: `${process.env.VUE_APP_BASE_URL}/upload`,
     }
   },
   mounted() {
     this.loadLocations();
   },
   methods: {
-    uploadDone(files){
-      if(files && Array.isArray(files) && files.length){
-        console.log(this.loader)
-        this.avatar = files[0].url
-      }
+    onProcessFile(error, file) {
+      this.avatar = `${process.env.VUE_APP_S3_URL}${file.filename}`
     },
     loadLocations(){
       axios

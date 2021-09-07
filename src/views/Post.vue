@@ -35,10 +35,11 @@
       </v-card-title>
       <v-divider class="ma-4"></v-divider>
       <v-card-text>
-        <form @submit.prevent="handleSubmit">
+        <v-form @submit.prevent="handleSubmit" ref="form">
           <v-text-field
               label="Product Name"
               v-model="name"
+              :rules="requiredRule"
               outlined
               dense
           ></v-text-field>
@@ -48,12 +49,14 @@
               :items="conditions"
               item-text="name"
               item-value="id"
+              :rules="requiredRule"
               dense
               outlined
           ></v-select>
           <v-textarea
               label="Description"
               v-model="description"
+              :rules="requiredRule"
               auto-grow
               outlined
               rows="3"
@@ -65,6 +68,7 @@
               :items="locations"
               item-text="name"
               item-value="id"
+              :rules="requiredRule"
               dense
               outlined
           ></v-select>
@@ -75,6 +79,7 @@
               @change="loadSubCategories"
               label="Category"
               v-model="selectedCategory"
+              :rules="requiredRule"
               dense
               outlined
           ></v-select>
@@ -84,15 +89,17 @@
               item-value="id"
               label="Sub Category"
               v-model="category"
+              :rules="requiredRule"
               dense
               outlined
           ></v-select>
-          <v-uploader
-              @done="uploadDone"
-              button-text="Select product picture"
-          >
-          </v-uploader>
-        </form>
+          <FilePond
+              name="filepond"
+              ref="pond"
+              :server="server"
+              @processfile="onProcessFile"
+          />
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -115,9 +122,28 @@
 import axios from "axios";
 import router from "@/router";
 import _get from "lodash/get"
+import vueFilePond, { setOptions } from 'vue-filepond';
+import 'filepond/dist/filepond.min.css';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginFileRename from 'filepond-plugin-file-rename';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+
+const FilePond = vueFilePond(
+    FilePondPluginImagePreview,
+    FilePondPluginFileRename
+);
+
+setOptions({
+  fileRenameFunction: (file) => {
+    return `${Date.now()}${file.extension}`;
+  },
+});
 
 export default {
   name: "Post",
+  components: {
+    FilePond
+  },
   data () {
     return {
       name: null,
@@ -133,7 +159,11 @@ export default {
       categories: [],
       subCategories: [],
       selectedCategory: null,
-      category: null
+      category: null,
+      server: `${process.env.VUE_APP_BASE_URL}/upload`,
+      requiredRule: [
+        v => !!v || 'This field is required',
+      ]
     }
   },
   mounted() {
@@ -142,10 +172,8 @@ export default {
     this.loadCategories();
   },
   methods: {
-    uploadDone(files){
-      if(files && Array.isArray(files) && files.length){
-        this.photo = files[0].url
-      }
+    onProcessFile(error, file) {
+      this.photo = `${process.env.VUE_APP_S3_URL}${file.filename}`
     },
     loadLocations(){
       axios
@@ -176,32 +204,34 @@ export default {
           )
     },
     async handleSubmit(){
-      this.overlay = true;
-      await axios
-          .post(`${process.env.VUE_APP_BASE_URL}/product`, {
-            name: this.name,
-            description: this.description,
-            photo: this.photo === null ? undefined : this.photo,
-            condition: this.condition,
-            location: this.location,
-            category: this.category
-          }, {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-          })
-          .then( function (response) {
-            router.push({name: 'Product', params: { id: _get(response, 'data.id', null) }});
-          })
-          .catch( (error) => {
-            if (error.response.status === 401){
-              localStorage.removeItem('accessToken')
-              router.push('/login')
-            }else {
-              this.snackbar = true
-            }
-          });
-      this.overlay = false;
+      if (this.$refs.form.validate()){
+        this.overlay = true;
+        await axios
+            .post(`${process.env.VUE_APP_BASE_URL}/product`, {
+              name: this.name,
+              description: this.description,
+              photo: this.photo === null ? undefined : this.photo,
+              condition: this.condition,
+              location: this.location,
+              category: this.category
+            }, {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+              }
+            })
+            .then( function (response) {
+              router.push({name: 'Product', params: { id: _get(response, 'data.id', null) }});
+            })
+            .catch( (error) => {
+              if (error.response.status === 401){
+                localStorage.removeItem('accessToken')
+                router.push('/login')
+              }else {
+                this.snackbar = true
+              }
+            });
+        this.overlay = false;
+      }
     }
   }
 }

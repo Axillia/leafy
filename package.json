@@ -10,10 +10,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "filepond-plugin-file-rename": "^1.1.8",
+    "filepond-plugin-image-preview": "^4.6.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "v-uploader": "^1.8.0",
     "vue": "^2.6.11",
+    "vue-filepond": "^5.1.2",
     "vue-goodshare": "^1.6.1",
     "vue-router": "^3.2.0",
     "vue-tawk": "^1.0.1",
