@@ -33,73 +33,113 @@
       <v-card-title>
         Submit your donation
       </v-card-title>
+      <validation-observer
+          ref="observer"
+          v-slot="{ invalid }"
+      >
       <v-divider class="ma-4"></v-divider>
       <v-card-text>
-        <v-form @submit.prevent="handleSubmit" ref="form">
-          <v-text-field
-              label="Product Name"
-              v-model="name"
-              :rules="requiredRule"
-              outlined
-              dense
-          ></v-text-field>
-          <v-select
-              label="Condition"
-              v-model="condition"
-              :items="conditions"
-              item-text="name"
-              item-value="id"
-              :rules="requiredRule"
-              dense
-              outlined
-          ></v-select>
-          <v-textarea
-              label="Description"
-              v-model="description"
-              :rules="requiredRule"
-              auto-grow
-              outlined
-              rows="3"
-              row-height="25"
-          ></v-textarea>
-          <v-select
-              label="Location"
-              v-model="location"
-              :items="locations"
-              item-text="name"
-              item-value="id"
-              :rules="requiredRule"
-              dense
-              outlined
-          ></v-select>
-          <v-select
-              :items="categories"
-              item-text="name"
-              item-value="id"
-              @change="loadSubCategories"
-              label="Category"
-              v-model="selectedCategory"
-              :rules="requiredRule"
-              dense
-              outlined
-          ></v-select>
-          <v-select
-              :items="subCategories"
-              item-text="name"
-              item-value="id"
-              label="Sub Category"
-              v-model="category"
-              :rules="requiredRule"
-              dense
-              outlined
-          ></v-select>
-          <FilePond
-              name="filepond"
-              ref="pond"
-              :server="server"
-              @processfile="onProcessFile"
-          />
-        </v-form>
+          <v-form @submit.prevent="handleSubmit" ref="form">
+            <validation-provider
+                v-slot="{ errors }"
+                name="product name"
+                rules="required"
+            >
+              <v-text-field
+                  label="Product Name"
+                  v-model="name"
+                  :error-messages="errors"
+                  outlined
+                  dense
+              ></v-text-field>
+            </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="condition"
+                rules="required"
+            >
+              <v-select
+                  label="Condition"
+                  v-model="condition"
+                  :items="conditions"
+                  item-text="name"
+                  item-value="id"
+                  :error-messages="errors"
+                  dense
+                  outlined
+              ></v-select>
+            </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="description"
+                rules="required"
+            >
+              <v-textarea
+                  label="Description"
+                  v-model="description"
+                  :error-messages="errors"
+                  auto-grow
+                  outlined
+                  rows="3"
+                  row-height="25"
+              ></v-textarea>
+            </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="location"
+                rules="required"
+            >
+              <v-select
+                  label="Location"
+                  v-model="location"
+                  :items="locations"
+                  :error-messages="errors"
+                  item-text="name"
+                  item-value="id"
+                  dense
+                  outlined
+              ></v-select>
+            </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="category"
+                rules="required"
+            >
+            <v-select
+                :items="categories"
+                item-text="name"
+                item-value="id"
+                @change="loadSubCategories"
+                label="Category"
+                v-model="selectedCategory"
+                :error-messages="errors"
+                dense
+                outlined
+            ></v-select>
+            </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="sub category"
+                rules="required"
+            >
+            <v-select
+                :items="subCategories"
+                item-text="name"
+                item-value="id"
+                label="Sub Category"
+                v-model="category"
+                :error-messages="errors"
+                dense
+                outlined
+            ></v-select>
+            </validation-provider>
+            <FilePond
+                name="filepond"
+                ref="pond"
+                :server="server"
+                @processfile="onProcessFile"
+            />
+          </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -109,10 +149,12 @@
             color="primary"
             class="ma-4"
             @click="handleSubmit"
+            :disabled="invalid"
         >
           Post donation
         </v-btn>
       </v-card-actions>
+      </validation-observer>
     </v-card>
   </v-col>
 </v-row>
@@ -121,7 +163,7 @@
 <script>
 import axios from "axios";
 import router from "@/router";
-import _get from "lodash/get"
+import _get from "lodash/get";
 import vueFilePond, { setOptions } from 'vue-filepond';
 import 'filepond/dist/filepond.min.css';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -161,9 +203,6 @@ export default {
       selectedCategory: null,
       category: null,
       server: `${process.env.VUE_APP_BASE_URL}/upload`,
-      requiredRule: [
-        v => !!v || 'This field is required',
-      ]
     }
   },
   mounted() {

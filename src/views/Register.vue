@@ -69,75 +69,134 @@
                   <v-stepper-items>
                     <form @submit.prevent="handleSubmit">
                       <v-stepper-content step="1">
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ invalid }"
+                        >
                         <v-card
                             class="mb-12"
                             flat
                         >
-                          <v-text-field
-                              label="Email Address"
-                              v-model="email"
-                              type="email"
-                              prepend-inner-icon="mdi-email"
-                              outlined
-                          ></v-text-field>
-                          <v-text-field
-                              label="Phone Number"
-                              v-model="phone"
-                              prepend-inner-icon="mdi-phone"
-                              outlined
-                          ></v-text-field>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="email"
+                              rules="required|email"
+                          >
+                            <v-text-field
+                                label="Email Address"
+                                v-model="email"
+                                type="email"
+                                :error-messages="errors"
+                                prepend-inner-icon="mdi-email"
+                                outlined
+                            ></v-text-field>
+                          </validation-provider>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="phone number"
+                              :rules="{ required: true, regex: /^(?:0|94|\+94)?(?:(11|21|23|24|25|26|27|31|32|33|34|35|36|37|38|41|45|47|51|52|54|55|57|63|65|66|67|81|912)(0|2|3|4|5|7|9)|7(0|1|2|4|5|6|7|8)\d)\d{6}$/  }"
+                          >
+                            <v-text-field
+                                label="Phone Number"
+                                v-model="phone"
+                                prepend-inner-icon="mdi-phone"
+                                :error-messages="errors"
+                                outlined
+                            ></v-text-field>
+                          </validation-provider>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="password"
+                              :rules="{ required: true, regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/  }"
+                          >
                           <v-text-field
                               label="Password"
                               v-model="password"
                               prepend-inner-icon="mdi-lock"
                               outlined
+                              :error-messages="errors"
+                              ref="password"
                               :append-icon="pw_visibility ? 'mdi-eye' : 'mdi-eye-off'"
                               :type="pw_visibility ? 'text' : 'password'"
                               @click:append="pw_visibility = !pw_visibility"
                           ></v-text-field>
-
-                          <v-text-field
-                              label="Confirm Password"
-                              type="password"
-                              prepend-inner-icon="mdi-lock"
-                              outlined
-                          ></v-text-field>
+                          </validation-provider>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="confirm password"
+                              rules="required|confirmed:password"
+                          >
+                            <v-text-field
+                                label="Confirm Password"
+                                v-model="re_password"
+                                :error-messages="errors"
+                                prepend-inner-icon="mdi-lock"
+                                type="password"
+                                outlined
+                            ></v-text-field>
+                          </validation-provider>
                         </v-card>
 
                         <v-btn
                             color="primary"
                             @click="e1 = 2"
+                            :disabled="invalid"
                         >
                           Continue
                         </v-btn>
-
+                        </validation-observer>
                       </v-stepper-content>
 
                       <v-stepper-content step="2">
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ invalid }"
+                        >
                         <v-card
                             class="mb-12"
                             flat
                         >
-                          <v-text-field
-                              label="First Name"
-                              v-model="f_name"
-                              prepend-inner-icon="mdi-account"
-                              outlined
-                          ></v-text-field>
-                          <v-text-field
-                              label="Last Name"
-                              v-model="l_name"
-                              prepend-inner-icon="mdi-account"
-                              outlined
-                          ></v-text-field>
-                          <v-select
-                              label="Location"
-                              v-model="location_id"
-                              :items="locations"
-                              item-text="name"
-                              item-value="id"
-                              outlined
-                          ></v-select>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="first name"
+                              rules="required"
+                          >
+                            <v-text-field
+                                label="First Name"
+                                :error-messages="errors"
+                                v-model="f_name"
+                                prepend-inner-icon="mdi-account"
+                                outlined
+                            ></v-text-field>
+                          </validation-provider>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="last name"
+                              rules="required"
+                          >
+                            <v-text-field
+                                label="Last Name"
+                                v-model="l_name"
+                                :error-messages="errors"
+                                prepend-inner-icon="mdi-account"
+                                outlined
+                            ></v-text-field>
+                          </validation-provider>
+                          <validation-provider
+                              v-slot="{ errors }"
+                              name="location"
+                              rules="required"
+                          >
+                            <v-select
+                                label="Location"
+                                :error-messages="errors"
+                                v-model="location_id"
+                                :items="locations"
+                                item-text="name"
+                                item-value="id"
+                                outlined
+                            ></v-select>
+                          </validation-provider>
                           <v-textarea
                               label="Bio"
                               v-model="bio"
@@ -151,9 +210,11 @@
                         <v-btn
                             color="primary"
                             @click="e1 = 3"
+                            :disabled="invalid"
                         >
                           Continue
                         </v-btn>
+                        </validation-observer>
 
                       </v-stepper-content>
 
@@ -232,6 +293,7 @@ export default {
       timeout: 3000,
       overlay: false,
       loader: false,
+      re_password: null,
       server: `${process.env.VUE_APP_BASE_URL}/upload`,
     }
   },
