@@ -39,11 +39,11 @@
           <div class="text-h5">{{_get(profile, 'f_name', null)}} {{_get(profile, 'l_name', null)}}</div>
           <v-chip
               class="ma-2"
-              color="amber darken-2"
+              :color="_get(badge, '[1]', null)"
               outlined
           >
-            <v-icon left>mdi-star-circle</v-icon>
-            MEMBER
+            <v-icon left>{{_get(badge, '[2]', null)}}</v-icon>
+            {{_get(badge, '[0]', null)}}
           </v-chip>
           <div class="gray--text">Member since {{moment(_get(profile, 'membership_date', null)).format('MMM Do YYYY')}}</div>
           <div class="py-8">
@@ -241,6 +241,29 @@ import axios from "axios";
 import _get from "lodash/get";
 import moment from "moment";
 import router from "@/router";
+import Vue from "vue";
+
+Vue.prototype.$getBadge = (points) => {
+  const badges = [
+    ["STARTER", "grey darken-3", "mdi-account-check"],
+    ["NOVICE", "amber darken-3", "mdi-check-circle-outline"],
+    ["AMATEUR", "orange darken-4", "mdi-shield-check"],
+    ["EXPLORE", "green darken-3", "mdi-star-half-full"],
+    ["ELITE", "blue darken-4", "mdi-star"],
+    ["MASTER", "deep-purple darken-4", "mdi-star-circle"],
+    ["LEGEND", "purple darken-3", "star-face"],
+    ["DEMIGOD", "red darken-4", "mdi-license"]
+  ]
+
+  if (points >= 45000) return badges[7]
+  else if (points >= 25000) return badges[6]
+  else if (points >= 10000) return badges[5]
+  else if (points >= 5000) return badges[4]
+  else if (points >= 1500) return badges[3]
+  else if (points >= 500) return badges[2]
+  else if (points >= 100) return badges[1]
+  else return badges[0]
+}
 
 export default {
   name: "Profile",
@@ -272,7 +295,8 @@ export default {
       timeout: 3000,
       overlay: false,
       sent: [],
-      received: []
+      received: [],
+      badge: {},
     }
   },
   methods: {
@@ -285,7 +309,11 @@ export default {
               'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
           })
-          .then(response => (this.profile = response.data))
+          .then(response => {
+              this.profile = response.data;
+              this.badge = this.$getBadge(response.data.points);
+            }
+          )
           .catch((error) => {
             if (error.response.status === 401){
               localStorage.removeItem('accessToken')
@@ -364,7 +392,7 @@ export default {
     this.loadProfile();
     this.loadQuestions();
     this.loadSentInvitations();
-    this.loadReceivedInvitations()
+    this.loadReceivedInvitations();
   }
 }
 </script>

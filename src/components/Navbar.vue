@@ -14,6 +14,20 @@
       </div>
       <v-spacer></v-spacer>
       <v-btn
+          color="primary"
+          class="mr-2"
+      >
+        <v-icon left>mdi-wallet-giftcard</v-icon>
+        <span>Donate</span>
+      </v-btn>
+      <v-btn
+          color="green"
+          class="mr-2 white--text"
+      >
+        <v-icon left>mdi-store</v-icon>
+        <span>Store</span>
+      </v-btn>
+      <v-btn
           color="warning"
           :to="'/profile'"
       >
