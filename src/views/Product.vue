@@ -48,7 +48,7 @@
           <v-img
               class="mt-5"
               :src="_get(product, 'photo', null)"
-              width="500"
+              width="400"
           ></v-img>
           <v-flex class="text-h6 pt-5">Description</v-flex>
           <v-flex class="text-body-1 grey--text pt-5">{{_get(product, 'description', null)}}</v-flex>
@@ -186,21 +186,29 @@
             <div class="text-h5">{{_get(product, 'user.f_name', null)}} {{_get(product, 'user.l_name', null)}}</div>
             <v-chip
                 class="ma-2"
-                color="amber darken-2"
+                :color="_get(badge, '[1]', null)"
                 outlined
             >
-              <v-icon left>mdi-star-circle</v-icon>
-              MEMBER
+              <v-icon left>{{_get(badge, '[2]', null)}}</v-icon>
+              {{_get(badge, '[0]', null)}}
             </v-chip>
             <div class="gray--text">Member since {{moment(_get(product, 'user.membership_date', null)).format('MMM Do YYYY')}}</div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions
+              class="justify-center"
+          >
             <v-btn
-                text
                 :href="mailto"
-                color="primary">
-              <v-icon small left>mdi-android-messages</v-icon>
+                color="primary"
+                outlined
+            >
               <span>Message</span>
+            </v-btn>
+            <v-btn
+                :to="{ name: 'User', params: { id: _get(product, 'user.id', null) }}"
+                color="primary"
+            >
+              <span>Profile</span>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -338,7 +346,8 @@ export default {
       ],
       report_reason: null,
       report_message: null,
-      mailto: null
+      mailto: null,
+      badge: {},
     }
   },
   mounted() {
@@ -348,7 +357,8 @@ export default {
         .then(
             response => {
               this.product = response.data;
-              this.mailto = `mailto:${_get(this.product, 'user.email', null)}?subject=🍀 LEAFY:`
+              this.mailto = `mailto:${_get(this.product, 'user.email', null)}?subject=🍀 LEAFY:`;
+              this.badge = this.$getBadge(_get(this.product, 'user.points', null));
               this.overlay = false;
             }
         )

@@ -79,7 +79,7 @@
                 <p>
                   <span class="mr-8"><v-icon>mdi-map-marker</v-icon>{{_get(product, 'location.name', null)}}</span>
                   <span class="mr-8 d-none d-md-inline-flex">{{moment(_get(product, 'posted_date', null)).format('MMM Do YYYY')}}</span>
-                  <span>Views: {{_get(product, 'view_count', null)}}</span>
+                  <span class="mr-8 d-none d-md-inline-flex">Views: {{_get(product, 'view_count', null)}}</span>
                 </p>
                 <div class="text--primary">
                   <v-chip
