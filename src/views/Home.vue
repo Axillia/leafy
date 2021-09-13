@@ -15,7 +15,7 @@
         <v-container fill-height>
           <v-layout align-center justify-center row>
             <v-flex class="text-h3 text-center font-weight-bold" xs12 sm12 md12>Welcome to Leafy</v-flex>
-            <v-flex class="text-h5 text-center font-weight-bold" xs12 sm12 md12>Live green to save more green</v-flex>
+            <v-flex class="text-h5 text-center" xs12 sm12 md12>Share your pre-loved items and help someone learn!</v-flex>
             <v-flex class="text-h5 text-center font-weight-bold" xs12 sm12 md12>
               <v-chip
                   class="ma-2"

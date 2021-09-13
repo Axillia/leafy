@@ -226,6 +226,7 @@ import ShareTwitter from "vue-goodshare/src/providers/Twitter";
 import ShareWhatsapp from "vue-goodshare/src/providers/WhatsApp";
 import router from "@/router";
 
+
 export default {
   name: "Product",
   components: {
