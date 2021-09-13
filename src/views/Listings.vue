@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="pb-10">
     <v-row dense>
       <v-col cols="12">
         <v-overlay :value="overlay">

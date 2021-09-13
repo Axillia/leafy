@@ -1,5 +1,5 @@
 <template>
-<v-container>
+<v-container class="pb-10">
   <v-snackbar
       v-model="snackbar"
       :timeout="timeout"
