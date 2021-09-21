@@ -51,14 +51,6 @@
           </div>
           <div class="gray--text">{{_get(profile, 'bio', null)}}</div>
         </v-card-text>
-        <v-card-actions>
-          <v-btn
-              text
-              color="primary">
-            <v-icon small left>mdi-android-messages</v-icon>
-            <span>Message</span>
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-flex>
     <v-flex xs12 md9 sm12>
