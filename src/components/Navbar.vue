@@ -13,7 +13,7 @@
             contain
             :src="require('@/assets/logo.png')"
             transition="scale-transition"
-            width="150"
+            width="120"
             @click="$router.push('/')"
         />
       </div>
