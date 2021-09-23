@@ -100,11 +100,22 @@
     <v-flex class="pt-5">
       <v-card flat>
         <v-tabs v-model="tab">
+          <v-tab href="#leaderboard">Leaderboard</v-tab>
           <v-tab href="#question">Questions</v-tab>
           <v-tab href="#received">Invitations (Received)</v-tab>
           <v-tab href="#sent">Invitations (Sent)</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
+          <v-tab-item value="leaderboard">
+            <v-card flat>
+              <v-data-table
+                  :headers="leaderboard_headers"
+                  :items="leaderboard"
+                  :hide-default-footer="true"
+              >
+              </v-data-table>
+            </v-card>
+          </v-tab-item>
           <v-tab-item value="question">
             <v-card flat>
               <v-data-table
@@ -253,6 +264,18 @@ export default {
       received_headers: [
         { text: 'Product Name', value: 'product.name', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
+      ],
+      leaderboard_headers: [
+        { text: 'Rank', value: 'id', sortable: false },
+        { text: 'Name', value: 'name', sortable: false },
+        { text: 'Points', value: 'points', sortable: false },
+      ],
+      leaderboard: [
+        {id: 1, name: 'Ruchini Thathsarani', points: 15000},
+        {id: 2, name: 'Pamudi Geethma', points: 4500},
+        {id: 3, name: 'Sithmi Vivanya', points: 4100},
+        {id: 4, name: 'Kushan Shamika', points: 3240},
+        {id: 5, name: 'Chasindu Kumarasiri', points: 500}
       ],
       questions: [],
       answer: null,
